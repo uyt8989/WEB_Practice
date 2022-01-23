@@ -16,7 +16,7 @@ mongoose.connect('mongodb+srv://kyungyun:abcd1234@cluster0.iwrz5.mongodb.net/myF
 }).then(() => console.log('MongoDB Connected...'))
 .catch(err => console.log(err))
 
-app.get('/', (req, res) => res.send('Hello World!!!!!'))
+app.get('/', (req, res) => res.send('새해 복 많이 받으세요!!'))
 
 app.post('/register', (req, res) => {
     //회원 가입 할때 필요한 정보들을 client에서 가져오면
