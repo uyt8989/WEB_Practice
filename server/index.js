@@ -1,8 +1,12 @@
 const express = require('express')
 const app = express()
 
+
+
 const bodyParser = require('body-parser');
+
 const cookieParser = require('cookie-parser');
+
 const config = require('./config/key');
 const { auth } = require ("./middleware/auth");
 const { User } = require("./models/User");
@@ -23,7 +27,7 @@ mongoose.connect(config.mongoURI, {
 app.get('/', (req, res) => res.send('새해 복 많이 받으세요!!'))
 
 app.get('/api/hello', (req, res) =>{
-    res.send("안녕하세요~")
+    res.send("안녕하세요~!!!!")
 })
 
 app.post('/register', (req, res) => {
