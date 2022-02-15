@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import { Typography, Button, Form, message, Input, Icon } from 'antd';
 import Dropzone from 'react-dropzone';
 import Axios from 'axios'
+import { useSelector } from 'react-redux';
 
 const { TextArea } = Input;
 const { Title } = Typography;
@@ -19,7 +20,8 @@ const CategoryOptions = [
     { value: 4, label: "Sports" },
 ]
 
-function VideoUploadPage() {
+function VideoUploadPage(props) {
+    const user = useSelector(state => state.user);
     const [VideoTitle, setVideoTitle] = useState("")
     const [Description, setDescription] = useState("")
     const [Private, setPrivate] = useState(0)
@@ -57,7 +59,36 @@ function VideoUploadPage() {
         })
     }
 
-    const onSubmit = (event) => {}
+    const onSubmit = (e) => {
+        e.preventDefault();
+
+        const variables = {
+            writer: user.userData._id,
+            title: VideoTitle,
+            description: Description,
+            privacy: Private,
+            filepath: "",
+            category: Category,
+            duration: "",
+            thumbnail: ""
+        }
+
+        Axios.post('/api/video/uploadVideo', variables)
+        .then(response => {
+            if(response.data.success) {
+                console.log(response.data)
+                message.success('성공적으로 업로드 했습니다')
+
+                setTimeout(()=>{
+                    props.history.push('/')
+                }, 3000)
+
+               
+            } else {
+                alert('비디오 업로드에 실패 했습니다')
+            }
+        })
+    }
 
 
   return (
@@ -66,7 +97,7 @@ function VideoUploadPage() {
             <Title level={2}>Upload Video</Title>
       </div>
 
-      <Form onSubmit> 
+      <Form onSubmit={onSubmit}> 
         <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                 {/* Drop zone */}
                 <Dropzone 
@@ -87,7 +118,7 @@ function VideoUploadPage() {
                 </Dropzone>
                 {/* Thumbnail */}
                 <div>
-                    <img src alt />
+                   
                 </div>
         </div>
         <br />
