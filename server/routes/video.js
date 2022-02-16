@@ -1,9 +1,10 @@
 const express = require('express');
 const router = express.Router();
 const { Video } = require("../models/Video");
-
+const { Subscriber } = require('../models/Subcriber');
 const { auth } = require("../middleware/auth");
 const multer = require("multer");
+
 
 var storage = multer.diskStorage({
     destination: (req, file, cb) => {
@@ -67,6 +68,30 @@ router.post('/getVideoDetail', (req, res) => {
        return res.status(200).json({ success: true, videoDetail })
    })
 })
+
+router.post('/getSubscriptionVideo', (req, res) => {
+    // 자신의 아이디를 가지고 구독하는 사람들을 찾는다.
+    Subscriber.find({ 'userFrom': req.body.userFrom })
+    .exec((err, subscribers)=> {
+        if(err) return res.status(400).send(err);
+
+        let subscribedUser = [];
+
+        subscribers.map((subscriber, i)=> {
+            subscribedUser.push(subscriber.userTo)
+        })
+
+
+        //Need to Fetch all of the Videos that belong to the Users that I found in previous step. 
+        Video.find({ writer: { $in: subscribedUser }})
+            .populate('writer')
+            .exec((err, videos) => {
+                if(err) return res.status(400).send(err);
+                res.status(200).json({ success: true, videos })
+            })
+    })
+})
+
 
 
 module.exports = router;
