@@ -4,15 +4,14 @@ import Axios from 'axios'
 import SideVideo from './Sections/SideVideo'
 import Subscribe from './Sections/Subscribe'
 import Comment from './Sections/Comment'
-//import Video from '../../../../../server/models/Video'
 
 function VideoDetailPage(props) {
 
     const videoId = props.match.params.videoId
     const variable = { videoId: videoId }
 
-    const [VideoDetail, setVideoDetail] = useState([]);
-    const [Comments, setComments] = useState([]);
+    const [VideoDetail, setVideoDetail] = useState([])
+    const [Comments, setComments] = useState([])
 
     useEffect(() => {
         Axios.post('/api/video/getVideoDetail', variable)
@@ -20,40 +19,36 @@ function VideoDetailPage(props) {
                 if (response.data.success) {
                     setVideoDetail(response.data.videoDetail)
                 } else {
-                    alert('비디오 정보를 가져오는데 실패했습니다');
+                    alert('비디오 가져오기를 실패 했습니다.')
                 }
             })
 
         Axios.post('/api/comment/getComments', variable)
             .then(response => {
                 if (response.data.success) {
-                    //setComments(true)
-                    console.log("response.data.Comments", response.data.Comments)
-                    
-                    setComments(response.data.Comments)
-
-                    //console.log(variable)
-                    console.log('Comment', Comments)
-
+                    setComments(response.data.comments)
                 } else {
-                    alert('코멘트 정보를 가져오는데 실패했습니다')
+                    alert('코멘트 정보를 가져오는 것을 실패 하였습니다.')
                 }
             })
-    }, []);
+    }, [])
+
+    const refreshFunction = (newComments) => {
+        setComments(Comments.concat(newComments))
+    }
 
     if (VideoDetail.writer) {
 
-        const subscibeButton = VideoDetail.writer._id !== localStorage.getItem('userId') &&
-            <Subscribe userTo={VideoDetail.writer._id} userFrom={localStorage.getItem('userId')} />
-
+        const subscribeButton = VideoDetail.writer._id !== localStorage.getItem('userId') && <Subscribe userTo={VideoDetail.writer._id} userFrom={localStorage.getItem('userId')} />
         return (
             <Row gutter={[16, 16]}>
                 <Col lg={18} xs={24}>
                     <div style={{ width: '100%', padding: '3rem 4em' }}>
                         <video style={{ width: '100%' }} src={`http://localhost:5000/${VideoDetail.filePath}`} controls></video>
                         <List.Item
-                            actions={[subscibeButton]}
+                            actions={[subscribeButton]}
                         >
+
                             <List.Item.Meta
                                 avatar={<Avatar src={VideoDetail.writer.image} />}
                                 title={VideoDetail.writer.name}
@@ -62,8 +57,7 @@ function VideoDetailPage(props) {
 
 
                         </List.Item>
-
-                        <Comment commetLists={Comments} videoId={videoId} />
+                        <Comment refreshFunction={refreshFunction} commentLists={Comments} videoId={videoId} />
 
                     </div>
 
@@ -73,13 +67,12 @@ function VideoDetailPage(props) {
                 </Col>
             </Row>
         )
-    }
-    else {
+
+    } else {
         return (
-            <div>...loading</div>
+            <div>...</div>
         )
     }
-
 }
 
 export default VideoDetailPage

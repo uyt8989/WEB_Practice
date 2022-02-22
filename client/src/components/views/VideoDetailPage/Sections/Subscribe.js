@@ -23,7 +23,7 @@ function Subscribe(props) {
         Axios.post('/api/subscribe/subscribed', subscribedVariable)
             .then(response => {
                 if (response.data.success) {
-                    setSubscribed(response.data.subcribed)
+                    setSubscribed(response.data.subscribed)
                 } else {
                     alert('Failed to get Subscribed Information')
                 }
